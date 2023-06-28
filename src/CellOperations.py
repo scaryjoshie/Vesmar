@@ -1,5 +1,6 @@
 # Imports
 import pandas as pd
+
 # Python Imports
 from MiscUtils import keep_characters
 
@@ -14,7 +15,7 @@ class Cell:
 
         self.correction = None
 
-        # Types 
+        # Types
         allowed_types = ["date", "label", "normal"]
         if type not in allowed_types:
             raise ValueError("Invalid sim type. Expected one of: %s" % allowed_types)

@@ -1,11 +1,12 @@
 # Imports
 import pandas as pd
 from operator import attrgetter
+
 # Python Imports
 from CellOperations import Cell
 from difflib import get_close_matches
 
-'''
+"""
 Input: dataframe 
 1) Checks that all dates are numeric and in order (seperate code for the last date in column 20)
 2) Checks that all non-label cells contain only numbers, decimals, and percent signs
@@ -13,7 +14,7 @@ Input: dataframe
 4) Could also put all label rows into a list, then look for small dev9iations in similarity and flag them
 5) Highlights null label rows and also combined label rows
 Output: dataframe cell numbers
-'''
+"""
 
 
 #
@@ -26,23 +27,17 @@ class Table:
         # Sets df
         self.raw_df = df
         # To use later
-        self.bad_cells = {
-            "date": [],
-            "row": [],
-            "row_culprit": [],
-            "normal": [],
-            "label": [],
-        }
+        self.bad_cells = {"date": [], "row": [], "row_culprit": [], "normal": [], "label": []}
         # Creates stuff
         self.open_resources()  # creates self.dates_format which is used for checking dates
         self.create_new_table()  # this function also creates self.df
 
     def open_resources(self):
         # Reads dates_formats to get a list for later use
-        self.dates_format = list(pd.read_csv('Resources\\dates_format.tsv', sep='\t'))
+        self.dates_format = list(pd.read_csv("Resources\\dates_format.tsv", sep="\t"))
 
         # Reads allowed labels
-        with open('Resources\\labels_f.txt', 'r') as f:
+        with open("Resources\\labels_f.txt", "r") as f:
             self.allowed_labels = []
             for line in f:
                 self.allowed_labels.append(line.strip())
@@ -55,7 +50,6 @@ class Table:
         # Sets values for df
         for row_num in range(0, self.raw_df.shape[0]):
             for col_num in range(0, self.raw_df.shape[1]):
-
                 # Decides whether the type is "date", "label", or "normal"
                 if row_num == 0:
                     type = "date"
@@ -65,9 +59,9 @@ class Table:
                     type = "normal"
 
                 # Creates cell object
-                cell = Cell(value=self.raw_df.iat[row_num, col_num],
-                            type=type,
-                            location=[row_num, col_num])
+                cell = Cell(
+                    value=self.raw_df.iat[row_num, col_num], type=type, location=[row_num, col_num]
+                )
 
                 # Adds cell object to dataframe and to a list
                 self.df.iloc[row_num, col_num] = cell
@@ -95,7 +89,6 @@ class Table:
 
         # Finds rows with a more than 10x difference
         for row in row_nums:
-
             # Gets a list of everything in the row
             row_list = list(filter(lambda x: x.location[0] == row, filtered_normals_list))
 
@@ -109,11 +102,11 @@ class Table:
             for cell in row_list:
                 list_of_quotients = [cell.usable_value / x.usable_value for x in row_list]
                 if max(list_of_quotients) > quotient_max:
-                    '''
+                    """
                     print("QUOTIENT:", max(list_of_quotients))
                     print("cell value: ", cell.value)
                     print([cell.value for cell in row_list])
-                    '''
+                    """
                     self.bad_cells["row_culprit"].append(cell)
                     # Reminds the program to add the entire row to the list of bad cells
                     row_is_corrupt = True
@@ -133,14 +126,18 @@ class Table:
         # Removes all null cells from labels_list
         labels_list = list(filter(lambda x: x.is_null == False, labels_list))
         # Flags labels
-        flagged_labels = list(filter(lambda x: x.value.strip() not in self.allowed_labels, labels_list))
+        flagged_labels = list(
+            filter(lambda x: x.value.strip() not in self.allowed_labels, labels_list)
+        )
 
         # Sees if there exists a close option to correct to for each flagged label
         for i in flagged_labels:
             close_matches = get_close_matches(i.value, self.allowed_labels, 1)
             if len(close_matches) > 0:
                 i.correction = get_close_matches(i.value, self.allowed_labels, 1)[0]
-                i.value = "{} --> {}".format(i.value, get_close_matches(i.value, self.allowed_labels, 1)[0])
+                i.value = "{} --> {}".format(
+                    i.value, get_close_matches(i.value, self.allowed_labels, 1)[0]
+                )
 
         self.bad_cells["label"].extend(flagged_labels)
         # print([label.value for label in flagged_labels])

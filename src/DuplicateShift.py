@@ -1,5 +1,6 @@
 # Imports
 import pandas as pd
+
 # Python Imports
 from MiscUtils import keep_characters
 
@@ -13,12 +14,11 @@ def is_cell_label(string):
     len_nums = int(len(keep_characters(string, "1234567890")))
     if len_nums == 0:
         return True
-    return (len_chars/len_nums) > (7/3)
+    return (len_chars / len_nums) > (7 / 3)
 
 
 # Duplicate Shift
 def duplicate_shift(df):
-
     # Saves last column of original dataframe for later
     last_col = df.iloc[:, -1:]
 
@@ -27,9 +27,8 @@ def duplicate_shift(df):
     num_cols = df.shape[1]
     current_row = 0
 
-    # 
+    #
     while current_row < num_rows:
-
         squished_list = []
         for col in range(0, num_cols):
             cell = df.iat[current_row, col]
@@ -41,14 +40,14 @@ def duplicate_shift(df):
                 squished_list.append([cell])
             else:
                 squished_list.append(str(cell).split())
-        
+
         # Creates a "row list" which is just the current row if it was split into a dataframe (most of the time,
         # it's just a 1xn matrix, but if there is a split it will be a mxn matrix)
         row_list = []
         for index in range(0, max([len(a) for a in squished_list])):
             row = []
             for sub_list in squished_list:
-                if len(sub_list)-1 >= index:
+                if len(sub_list) - 1 >= index:
                     row.append(sub_list[index])
                 else:
                     row.append("")
@@ -70,12 +69,13 @@ def duplicate_shift(df):
     df = df.iloc[:, :-1]
     df = pd.concat([df, last_col], axis=1, ignore_index=True)
 
-    return (df)
+    return df
 
 
 if __name__ == "__main__":
     # Imports
     import glob
+
     # Gets paths of every xlsx file in specified directory
     FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")

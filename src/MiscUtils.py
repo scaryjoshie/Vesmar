@@ -5,7 +5,7 @@ import string
 
 
 # Gets the paths of every file in the directory
-def get_all_files_in_dir(folder_path, file_suffix =".xlsx"):
+def get_all_files_in_dir(folder_path, file_suffix=".xlsx"):
     """
     Input: folder path
     Output: path to every file with a certain suffix in that folder (defauly is xlsx)
@@ -23,7 +23,7 @@ def keep_characters(string, allowed_characters):
         # Remove all characters not present in the allowed string
         new_string = re.sub(pattern, "", string)
         return new_string
-    
+
 
 def location_to_cell_id(location):
     """

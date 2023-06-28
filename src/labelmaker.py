@@ -13,10 +13,9 @@ label_list = []
 
 # Opens every file under "labels"
 for file_path in file_paths:
-
     # Reads the excel file into a pandas dataframe
     labels = list(pd.read_excel(file_path, "Table_0")[19])
-    
+
     # Strips all labels in the list (removes outer spaces)
     labels = [label.strip() for label in labels]
 
@@ -29,6 +28,6 @@ label_list = list(set(label_list))
 # Sorts the list into alphabetical order
 label_list.sort()
 
-with open ("Resources\\labels.txt", "w") as f:
+with open("Resources\\labels.txt", "w") as f:
     for label in label_list:
         f.write(label + "\n")
