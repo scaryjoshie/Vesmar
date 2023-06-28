@@ -16,6 +16,7 @@ comm==0.1.2
 debugpy==1.6.6
 decorator==5.1.1
 defusedxml==0.7.1
+et-xmlfile==1.1.0
 executing==1.2.0
 fastjsonschema==2.16.3
 fqdn==1.5.1
@@ -56,8 +57,11 @@ nbformat==5.7.3
 nest-asyncio==1.5.6
 notebook==6.5.2
 notebook_shim==0.2.2
+numpy==1.25.0
 oauthlib==3.2.2
+openpyxl==3.1.2
 packaging==23.0
+pandas==2.0.2
 pandocfilters==1.5.0
 parso==0.8.3
 pexpect==4.8.0
@@ -77,6 +81,7 @@ pyparsing==3.1.0
 pyrsistent==0.19.3
 python-dateutil==2.8.2
 python-json-logger==2.0.7
+pytz==2023.3
 PyYAML==6.0
 pyzmq==25.0.0
 qtconsole==5.4.0
@@ -95,6 +100,7 @@ terminado==0.17.1
 tinycss2==1.2.1
 tornado==6.2
 traitlets==5.9.0
+tzdata==2023.3
 uri-template==1.2.0
 uritemplate==4.1.1
 urllib3==1.26.16

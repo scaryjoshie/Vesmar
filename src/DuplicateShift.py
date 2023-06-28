@@ -1,26 +1,26 @@
 # Imports
 import pandas as pd
 # Python Imports
-from MiscUtils import KeepCharacters
+from MiscUtils import keep_characters
+
 
 def is_cell_label(string):
-    '''
+    """
     This function just finds the ratio of alphabetical characters to numbers. If that ratio exceeds a certain amount (7/3 or 70% alphabet), the cell is deemed as a label
-    '''
+    """
     string = str(string)
-    len_chars = int(len(KeepCharacters(string, "abcdefghijklmnopqrstuvwxyz'()$")))
-    len_nums = int(len(KeepCharacters(string, "1234567890")))
+    len_chars = int(len(keep_characters(string, "abcdefghijklmnopqrstuvwxyz'()$")))
+    len_nums = int(len(keep_characters(string, "1234567890")))
     if len_nums == 0:
         return True
     return (len_chars/len_nums) > (7/3)
-
 
 
 # Duplicate Shift
 def duplicate_shift(df):
 
     # Saves last column of original dataframe for later
-    last_col = df.iloc[:,-1:]
+    last_col = df.iloc[:, -1:]
 
     # Gets the number of rows and columns
     num_rows = df.shape[0]
@@ -42,7 +42,8 @@ def duplicate_shift(df):
             else:
                 squished_list.append(str(cell).split())
         
-        # Creates a "row list" which is just the current row if it was split into a dataframe (most of the time, its just a 1xn matrix, but if theres a split it will be a mxn matrix)
+        # Creates a "row list" which is just the current row if it was split into a dataframe (most of the time,
+        # it's just a 1xn matrix, but if there is a split it will be a mxn matrix)
         row_list = []
         for index in range(0, max([len(a) for a in squished_list])):
             row = []
@@ -52,7 +53,6 @@ def duplicate_shift(df):
                 else:
                     row.append("")
             row_list.append(row)
-
 
         # Drops the current row
         df.drop([current_row], axis=0, inplace=True)
@@ -67,11 +67,10 @@ def duplicate_shift(df):
         num_rows += len(row_list) - 1
 
     # Replaces last column with original last column, since that's generally more accurate
-    df = df.iloc[: , :-1]
+    df = df.iloc[:, :-1]
     df = pd.concat([df, last_col], axis=1, ignore_index=True)
 
     return (df)
-
 
 
 if __name__ == "__main__":
@@ -85,4 +84,4 @@ if __name__ == "__main__":
 
     dup = duplicate_shift(df=df)
 
-    dup.to_excel("testing or archive\\294 done 2.xlsx", index = False)
+    dup.to_excel("testing or archive\\294 done 2.xlsx", index=False)

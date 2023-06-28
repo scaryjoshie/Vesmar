@@ -19,6 +19,10 @@ Output: dataframe cell numbers
 #
 class Table:
     def __init__(self, df):
+        self.df = None  # good practice to include;
+        self.df_list = None  # good practice to include;
+        self.dates_format = None  # good practice to include;
+        self.allowed_labels = None  # good practice to include;
         # Sets df
         self.raw_df = df
         # To use later
@@ -30,24 +34,22 @@ class Table:
             "label": [],
         }
         # Creates stuff
-        self.OpenResources() # creates self.dates_format which is used for checking dates
-        self.CreateNewTable() # this function also creates self.df
+        self.open_resources()  # creates self.dates_format which is used for checking dates
+        self.create_new_table()  # this function also creates self.df
 
-
-    def OpenResources(self):
+    def open_resources(self):
         # Reads dates_formats to get a list for later use
-        self.dates_format = list(pd.read_csv('Resources\\dates_format.tsv',sep='\t'))
+        self.dates_format = list(pd.read_csv('Resources\\dates_format.tsv', sep='\t'))
 
         # Reads allowed labels
-        with open ('Resources\\labels_f.txt', 'r') as f:
+        with open('Resources\\labels_f.txt', 'r') as f:
             self.allowed_labels = []
             for line in f:
                 self.allowed_labels.append(line.strip())
-        #print(self.allowed_labels)
+        # print(self.allowed_labels)
 
-
-    def CreateNewTable(self):
-        self.df = self.raw_df.copy(deep = True)
+    def create_new_table(self):
+        self.df = self.raw_df.copy(deep=True)
         self.df_list = []
 
         # Sets values for df
@@ -61,28 +63,27 @@ class Table:
                     type = "label"
                 else:
                     type = "normal"
-                
+
                 # Creates cell object
-                cell = Cell(value = self.raw_df.iat[row_num, col_num],
+                cell = Cell(value=self.raw_df.iat[row_num, col_num],
                             type=type,
-                            location=[row_num,col_num])
-                
+                            location=[row_num, col_num])
+
                 # Adds cell object to dataframe and to a list
                 self.df.iloc[row_num, col_num] = cell
                 self.df_list.append(cell)
-                
 
-    def CheckDates(self):
+    def check_dates(self):
         dates_list = list(filter(lambda x: x.type == "date", self.df_list))
-        #print([date.value for date in dates_list])
-        #print(self.dates_format)
+        # print([date.value for date in dates_list])
+        # print(self.dates_format)
         for i in range(0, min(len(dates_list), len(self.dates_format))):
-            #print("LIST", len(dates_list))
-            #print("FORMAT", len(self.dates_format))
+            # print("LIST", len(dates_list))
+            # print("FORMAT", len(self.dates_format))
             if not str(self.dates_format[i]).strip() == str(dates_list[i].value).strip():
                 self.bad_cells["date"].append(dates_list[i])
 
-    def CheckNormals(self, QUOTIENT_MAX):
+    def check_normals(self, quotient_max):
         # Finds cells with anomalies
         normals_list = list(filter(lambda x: x.type == "normal", self.df_list))
         anomalies_list = list(filter(lambda x: x.has_anomalies == True, normals_list))
@@ -106,8 +107,8 @@ class Table:
             row_list = list(filter(lambda x: x.usable_value != 0, row_list))
             row_is_corrupt = False
             for cell in row_list:
-                list_of_quotients = [cell.usable_value/x.usable_value for x in row_list]
-                if max(list_of_quotients) > QUOTIENT_MAX:
+                list_of_quotients = [cell.usable_value / x.usable_value for x in row_list]
+                if max(list_of_quotients) > quotient_max:
                     '''
                     print("QUOTIENT:", max(list_of_quotients))
                     print("cell value: ", cell.value)
@@ -123,7 +124,7 @@ class Table:
                 min_cell = min(row_list, key=lambda x: x.usable_value)
                 self.bad_cells["row_culprit"].append(min_cell)
 
-    def CheckLabels(self):
+    def check_labels(self):
         # Gets a list of all cells tagged as "label" cells
         labels_list = list(filter(lambda x: x.type == "label", self.df_list))
         # Finds all labels that are null and tags them
@@ -133,25 +134,25 @@ class Table:
         labels_list = list(filter(lambda x: x.is_null == False, labels_list))
         # Flags labels
         flagged_labels = list(filter(lambda x: x.value.strip() not in self.allowed_labels, labels_list))
-        
+
         # Sees if there exists a close option to correct to for each flagged label
         for i in flagged_labels:
             close_matches = get_close_matches(i.value, self.allowed_labels, 1)
             if len(close_matches) > 0:
                 i.correction = get_close_matches(i.value, self.allowed_labels, 1)[0]
                 i.value = "{} --> {}".format(i.value, get_close_matches(i.value, self.allowed_labels, 1)[0])
-        
+
         self.bad_cells["label"].extend(flagged_labels)
-        #print([label.value for label in flagged_labels])
-
-
+        # print([label.value for label in flagged_labels])
 
 
 ###################################
 
+
 if __name__ == "__main__":
     # Imports
     import glob
+
     # Gets paths of every xlsx file in specified directory
     FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
@@ -160,8 +161,8 @@ if __name__ == "__main__":
 
     # Fun stuff
     table = Table(df=df)
-    table.CheckLabels()
-    #table.CheckDates()
-    #table.CheckNormals(QUOTIENT_MAX=10)
-    
-    #print([cell.value for cell in table.bad_cells])
+    table.check_labels()
+    # table.CheckDates()
+    # table.CheckNormals(QUOTIENT_MAX=10)
+
+    # print([cell.value for cell in table.bad_cells])

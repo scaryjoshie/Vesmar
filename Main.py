@@ -12,7 +12,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 # Python Imports
 from Josh_code.chart_reader.src.TableOperations import Table
-from Josh_code.chart_reader.src.MiscUtils import LocationToCellID
+from Josh_code.chart_reader.src.MiscUtils import location_to_cell_id
 from Josh_code.chart_reader.src.DuplicateShift import duplicate_shift
 
 
@@ -27,8 +27,8 @@ file_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
 QUOTIENT_MAX = 10 # max values that 2 cells can have when divided by one another before the row is flagged
 
 
-
 ######################################################################
+
 
 # Takes care of color pattern stuff
 '''
@@ -70,9 +70,9 @@ for file_path in file_paths:
 
     # Creates table object and checks all values
     table = Table(df=df) 
-    table.CheckDates
-    table.CheckNormals(QUOTIENT_MAX=QUOTIENT_MAX)
-    table.CheckLabels()
+    table.check_dates()
+    table.check_normals(quotient_max=QUOTIENT_MAX)
+    table.check_labels()
 
     # Loads file into openpyxl
     wb = openpyxl.load_workbook(file_path)
@@ -81,12 +81,12 @@ for file_path in file_paths:
 
     # Fills every cell value with what it's supposed to be
     for cell in table.df_list:
-        ws[LocationToCellID(cell.location)] = cell.value
+        ws[location_to_cell_id(cell.location)] = cell.value
 
     # Fills in all colors
     for type in table.bad_cells.keys():
         for cell in table.bad_cells[type]:
-            ws[LocationToCellID(cell.location)].fill = fillers[type]
+            ws[location_to_cell_id(cell.location)].fill = fillers[type]
 
     # Names and saves file
     name = file_path.split("\\")[-1]

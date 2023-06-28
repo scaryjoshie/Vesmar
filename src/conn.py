@@ -13,6 +13,7 @@ credentials = service_account.Credentials.from_service_account_file(
 
 # Build the Google Drive API client
 drive_service = build('drive', 'v3', credentials=credentials)
+sheets_service = build('sheets', 'v4', credentials=credentials)
 
 # returns all files within specified folder
 results = drive_service.files().list( q=f"'{FOLDER_ID}' in parents", fields="files(id, name)" ).execute()
