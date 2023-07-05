@@ -3,5 +3,7 @@ tables/
 .idea/
 credentials1.json
 env/
+venv/
 src/__pycache__/
 token.json
+.DS_Store
