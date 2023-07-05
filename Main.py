@@ -12,64 +12,55 @@ from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 # Python Imports
-from src.conn import get_sheets
+from src.conn import get_sheets, sheets_service
 from src.TableOperations import Table
 from src.MiscUtils import location_to_cell_id
 from src.DuplicateShift import duplicate_shift
 
-
-######################################################################
-
+USE_LOCAL = False
+COLOR_DICT = {
+    "date": "fffffb85",  # yellow
+    "normal": "fffc9dde",  # normal anomaly --> pink (#fc9dde)
+    "label": "ff71bd74",  # label --> green (#71bd74)
+    "row_culprit": "ff72a5f7",  # row_culprit --> dark blue (#515be0)
+    "row": "ffbbd4fc",  # row --> light blue (#96b1ff)
+}
+fillers = {}
+for color in COLOR_DICT.keys():
+    temp = PatternFill(patternType="solid", fgColor=COLOR_DICT[color])
+    fillers[color] = temp
 
 # Gets paths of every xlsx file in specified directory
 FOLDER_PATH = "Tables\\Label Tables"
 # FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
-file_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
-# Constants
-QUOTIENT_MAX = (
-    10  # max values that 2 cells can have when divided by one another before the row is flagged
-)
+files = glob.glob(f"{FOLDER_PATH}/*.xlsx")
+# max values that 2 cells can have when divided by one another before the row is flagged
+QUOTIENT_MAX = 10
 
 
-######################################################################
-
-
-# Takes care of color pattern stuff
-"""
-COLOR STUFF
-date --> yellow (#fffb85)
-normal anomaly --> pink (#fc9dde)
-label --> green (#71bd74)
-row_culprit --> dark blue (#515be0)
-row --> light blue (#96b1ff)
-"""
-color_dict = {
-    "date": "fffffb85",
-    "normal": "fffc9dde",
-    "label": "ff71bd74",
-    "row_culprit": "ff72a5f7",
-    "row": "ffbbd4fc",
-}
-fillers = {}
-for color in color_dict.keys():
-    temp = PatternFill(patternType="solid", fgColor=color_dict[color])
-    fillers[color] = temp
-
-######################################################################
-
-
-# Creates directory for output
-output_dir = "output13"
-os.mkdir(f"Output\\{output_dir}")
-
+if USE_LOCAL:
+    output_dir = "output13"
+    os.mkdir(f"Output\\{output_dir}")
+else:
+    files = get_sheets()
 
 # Runs through every file
-for file_path in file_paths:
-    print(file_path)
+for file in files:
+    print(file)
 
-    # Reads file into df then runs through the demerger
-    raw_df = pd.read_excel(file_path, "Table_0")
-    df = duplicate_shift(raw_df)
+    # Reads file into df then runs through the de-merger
+    if USE_LOCAL:
+        raw_df = pd.read_excel(file, "Table_0")
+        df = duplicate_shift(raw_df)
+    else:
+        values = (
+            sheets_service.spreadsheets()
+            .values()
+            .get(spreadsheetId=file["id"], range="Table_0")
+            .execute()
+            .get("values", [])
+        )
+        df = pd.DataFrame(values)
 
     # Creates table object and checks all values
     table = Table(df=df)
@@ -78,7 +69,7 @@ for file_path in file_paths:
     table.check_labels()
 
     # Loads file into openpyxl
-    wb = openpyxl.load_workbook(file_path)
+    wb = openpyxl.load_workbook(file)
     ws = wb["Table_0"]
     rows = dataframe_to_rows(table)
 
@@ -92,5 +83,9 @@ for file_path in file_paths:
             ws[location_to_cell_id(cell.location)].fill = fillers[type]
 
     # Names and saves file
-    name = file_path.split("\\")[-1]
+    if USE_LOCAL:
+        name = file.split("\\")[-1]
+    else:
+        name = file["name"]
+
     wb.save(f"Output\\{output_dir}\\{name}")

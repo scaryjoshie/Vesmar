@@ -2,7 +2,7 @@
 import pandas as pd
 
 # Python Imports
-from MiscUtils import keep_characters
+from src.MiscUtils import keep_characters
 
 
 def is_cell_label(string):
