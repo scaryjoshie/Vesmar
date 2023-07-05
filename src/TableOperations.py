@@ -3,7 +3,7 @@ import pandas as pd
 from operator import attrgetter
 
 # Python Imports
-from CellOperations import Cell
+from src.CellOperations import Cell
 from difflib import get_close_matches
 
 """
