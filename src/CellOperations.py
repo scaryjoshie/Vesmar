@@ -33,7 +33,7 @@ class Cell:
         if pd.isna(self.raw_value):
             return False
         # If there is more than one decimal, returns true because cells should only have at most one decimal point
-        elif len(keep_characters(value, ".")) > 1:
+        elif len(keep_characters(self.value, ".")) > 1:
             return True
 
         # If filtering (only keeping the specified string) changes the value, returns True

@@ -4,12 +4,15 @@
 
 
 # Imports
+import time
 import glob
 import os
+import shutil
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
+from multiprocessing import Pool, Process
 
 # Python Imports
 from src.TableOperations import Table
@@ -46,26 +49,30 @@ for color in color_dict.keys():
 
 
 # Creates directory for output
-if os.path.exists(os.path.join("output", OUTPUT_DIR)):
-    while True:
-        overwrite = input("Dir w/ same name exists. Overwrite? (y/n): ")
-        if "y" == overwrite:
-            os.rmdir(os.path.join("output", OUTPUT_DIR))
-            break
-        elif "n" == overwrite:
-            OUTPUT_DIR = input("Choose a new output dir name: ")
-            break
-        else:
-            continue
-if not os.path.exists("output"):
-    os.mkdir("output")
-os.mkdir(os.path.join("output", OUTPUT_DIR))
+# if os.path.exists(os.path.join("output", OUTPUT_DIR)):
+#     while True:
+#         overwrite = input("Dir w/ same name exists. Overwrite? (y/n): ")
+#         if "y" == overwrite:
+#             os.rmdir(os.path.join("output", OUTPUT_DIR))
+#             break
+#         elif "n" == overwrite:
+#             OUTPUT_DIR = input("Choose a new output dir name: ")
+#             break
+#         else:
+#             continue
+# if not os.path.exists("output"):
+#     os.mkdir("output")
+
+output_path = os.path.join("output", OUTPUT_DIR)
+# # if os.path.exists(output_path):
+shutil.rmtree(output_path)
+os.mkdir(output_path)
 
 
 def process_spreadsheet(file_path):
     print(file_path)
 
-    # Reads file into df then runs through the demerger
+    # Reads file into df then runs through the de-merger
     raw_df = pd.read_excel(file_path, "Table_0")
     df = duplicate_shift(raw_df)
 
@@ -90,9 +97,15 @@ def process_spreadsheet(file_path):
             ws[location_to_cell_id(cell.location)].fill = fillers[type]
 
     # Names and saves file
-    name = os.path.basename(file_patht)
+    name = os.path.basename(file_path)
     wb.save(os.path.join("Output", OUTPUT_DIR, name))
 
 
-for file_path in file_paths:
-    process_spreadsheet(file_path)
+
+# Process all files in parallel
+if __name__ == "__main__":
+
+    start_time = time.perf_counter()
+    with Pool(processes=4) as pool:
+        pool.map(process_spreadsheet, file_paths)
+    print(f"Spread sheet processing completed in: {time.perf_counter()-start_time}")
