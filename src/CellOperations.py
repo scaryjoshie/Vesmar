@@ -18,7 +18,7 @@ class Cell:
         # Types
         allowed_types = ["date", "label", "normal"]
         if type not in allowed_types:
-            raise ValueError("Invalid sim type. Expected one of: %s" % allowed_types)
+            raise ValueError("Invalid type. Expected one of: %s" % allowed_types)
         else:
             self.type = type
 
