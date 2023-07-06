@@ -11,9 +11,9 @@ import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 # Python Imports
-from TableOperations import Table
-from MiscUtils import LocationToCellID
-from DuplicateShift import duplicate_shift
+from src.TableOperations import Table
+from src.MiscUtils import LocationToCellID
+from src.DuplicateShift import duplicate_shift
 
 
 ######################################################################
