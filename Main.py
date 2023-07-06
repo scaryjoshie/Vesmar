@@ -12,7 +12,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 # Python Imports
 from src.TableOperations import Table
-from src.MiscUtils import LocationToCellID
+from src.MiscUtils import location_to_cell_id
 from src.DuplicateShift import duplicate_shift
 
 
@@ -84,12 +84,12 @@ for file_path in file_paths:
 
     # Fills every cell value with what it's supposed to be
     for cell in table.df_list:
-        ws[LocationToCellID(cell.location)] = cell.value
+        ws[location_to_cell_id(cell.location)] = cell.value
 
     # Fills in all colors
     for type in table.bad_cells.keys():
         for cell in table.bad_cells[type]:
-            ws[LocationToCellID(cell.location)].fill = fillers[type]
+            ws[location_to_cell_id(cell.location)].fill = fillers[type]
 
     # Names and saves file
     name = file_path.split("\\")[-1]
