@@ -28,13 +28,19 @@ class Cell:
         self.usable_value = self.get_usable_value()
         self.is_null = pd.isna(self.raw_value)
 
-    def check_for_anomalies(self):
+    def CheckForAnomalies(self):
         # If the cell is null, there are no anomalies and so it returns false
         if pd.isna(self.raw_value):
             return False
+        # If there is more than one decimal, returns true because cells should only have at most one decimal point
+        elif len(KeepCharacters(value, ".")) > 1:
+            return True
+        
         # If filtering (only keeping the specified string) changes the value, returns True
-        value = str(self.value).replace("Nil", "")  # removes "Nil" from string
-        filtered_value = keep_characters(value, "1234567890.%-")
+        value = str(self.value).replace("Nil", "") # removes "Nil" from string
+        filtered_value = KeepCharacters(value, "1234567890.%-")
+
+        # Returns filtered value
         return str(filtered_value) != str(value).strip()
 
     def check_for_usable_value(self) -> bool:
