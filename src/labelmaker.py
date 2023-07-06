@@ -1,6 +1,7 @@
 # Imports
 import glob
 import pandas as pd
+import os
 
 
 # Gets paths of every xlsx file in specified directory
@@ -28,6 +29,6 @@ label_list = list(set(label_list))
 # Sorts the list into alphabetical order
 label_list.sort()
 
-with open("Resources\\labels.txt", "w") as f:
+with open(os.path.join("Resources", "labels.txt"), "w") as f:
     for label in label_list:
         f.write(label + "\n")

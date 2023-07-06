@@ -18,21 +18,17 @@ from src.DuplicateShift import duplicate_shift
 
 
 ######################################################################
-
-
-# INPUT FOLDER PATH
-FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
-# Gets paths of every xlsx file in specified directory
-file_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
-# CONSTANTS
+INPUT_DIR = os.path.join("input")
+OUTPUT_DIR = "output18"
 QUOTIENT_MAX = (
     10  # max values that 2 cells can have when divided by one another before the row is flagged
 )
-
-
 ######################################################################
 
+# gets all files from INPUT_DIR
+file_paths = glob.glob(f"{INPUT_DIR}/*.xlsx")
 
+# color mapping
 color_dict = {
     "date": "fffffb85",  # date --> yellow (#fffb85)
     "normal": "fffc9dde",  # normal anomaly --> pink (#fc9dde)
@@ -48,29 +44,25 @@ for color in color_dict.keys():
     temp = PatternFill(patternType="solid", fgColor=color_dict[color])
     fillers[color] = temp
 
-######################################################################
-
 
 # Creates directory for output
-output_dir = "output18"
-if os.path.exists(os.path.join("output", output_dir)):
+if os.path.exists(os.path.join("output", OUTPUT_DIR)):
     while True:
         overwrite = input("Dir w/ same name exists. Overwrite? (y/n): ")
         if "y" == overwrite:
-            os.rmdir(os.path.join("output", output_dir))
+            os.rmdir(os.path.join("output", OUTPUT_DIR))
             break
         elif "n" == overwrite:
-            output_dir = input("Choose a new output dir name: ")
+            OUTPUT_DIR = input("Choose a new output dir name: ")
             break
         else:
             continue
 if not os.path.exists("output"):
     os.mkdir("output")
-os.mkdir(os.path.join("output", output_dir))
+os.mkdir(os.path.join("output", OUTPUT_DIR))
 
 
-# Runs through every file
-for file_path in file_paths:
+def process_spreadsheet(file_path):
     print(file_path)
 
     # Reads file into df then runs through the demerger
@@ -79,9 +71,9 @@ for file_path in file_paths:
 
     # Creates table object and checks all values
     table = Table(df=df)
-    table.CheckDates
-    table.CheckNormals(QUOTIENT_MAX=QUOTIENT_MAX)
-    table.CheckLabels()
+    table.check_dates()
+    table.check_normals(QUOTIENT_MAX=QUOTIENT_MAX)
+    table.check_labels()
 
     # Loads file into openpyxl
     wb = openpyxl.load_workbook(file_path)
@@ -98,5 +90,9 @@ for file_path in file_paths:
             ws[location_to_cell_id(cell.location)].fill = fillers[type]
 
     # Names and saves file
-    name = file_path.split("\\")[-1]
-    wb.save(f"Output\\{output_dir}\\{name}")
+    name = os.path.basename(file_patht)
+    wb.save(os.path.join("Output", OUTPUT_DIR, name))
+
+
+for file_path in file_paths:
+    process_spreadsheet(file_path)

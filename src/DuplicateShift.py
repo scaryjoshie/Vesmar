@@ -1,5 +1,5 @@
-# Imports
 import pandas as pd
+import os
 
 # Python Imports
 from src.MiscUtils import keep_characters
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     import glob
 
     # Gets paths of every xlsx file in specified directory
-    FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
+    FOLDER_PATH = os.path.join("Tables", "1970 Mar Apr Right Tables")
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
     # Opens specific dataframe
     df = pd.read_excel(files_paths[294], "Table_0")

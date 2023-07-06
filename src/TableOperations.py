@@ -2,6 +2,7 @@
 import pandas as pd
 from operator import attrgetter
 import statistics
+import os
 
 # Python Imports
 from src.CellOperations import Cell
@@ -36,21 +37,21 @@ class Table:
             "label": [],
         }
         # Creates stuff
-        self.OpenResources()  # creates self.dates_format which is used for checking dates
-        self.CreateNewTable()  # this function also creates self.df
+        self.open_resources()  # creates self.dates_format which is used for checking dates
+        self.create_new_table()  # this function also creates self.df
 
-    def OpenResources(self):
+    def open_resources(self):
         # Reads dates_formats to get a list for later use
-        self.dates_format = list(pd.read_csv("Resources\\dates_format.tsv", sep="\t"))
+        self.dates_format = list(pd.read_csv(os.path.join("Resources", "dates_format.tsv"), sep="\t"))
 
         # Reads allowed labels
-        with open("Resources\\labels_258-299 (m).txt", "r") as f:
+        with open(os.path.join("Resources", "labels_258-299 (m).txt"), "r") as f:
             self.allowed_labels = []
             for line in f:
                 self.allowed_labels.append(line.strip())
         # print(self.allowed_labels)
 
-    def CreateNewTable(self):
+    def create_new_table(self):
         self.df = self.raw_df.copy(deep=True)
         self.df_list = []
 
@@ -74,7 +75,7 @@ class Table:
                 self.df.iloc[row_num, col_num] = cell
                 self.df_list.append(cell)
 
-    def CheckDates(self):
+    def check_dates(self):
         dates_list = list(filter(lambda x: x.type == "date", self.df_list))
         # print([date.value for date in dates_list])
         # print(self.dates_format)
@@ -84,7 +85,7 @@ class Table:
             if not str(self.dates_format[i]).strip() == str(dates_list[i].value).strip():
                 self.bad_cells["date"].append(dates_list[i])
 
-    def CheckNormals(self, QUOTIENT_MAX):
+    def check_normals(self, QUOTIENT_MAX):
         # Finds cells with anomalies
         normals_list = list(filter(lambda x: x.type == "normal", self.df_list))
         anomalies_list = list(filter(lambda x: x.has_anomalies == True, normals_list))
@@ -141,7 +142,7 @@ class Table:
                 min_cell = min(row_list, key=lambda x: x.usable_value)
                 self.bad_cells["row_small"].append(min_cell)
 
-    def CheckLabels(self):
+    def check_labels(self):
         # Gets a list of all cells tagged as "label" cells
         labels_list = list(filter(lambda x: x.type == "label", self.df_list))
         # Finds all labels that are null and tags them
@@ -174,15 +175,15 @@ if __name__ == "__main__":
     import glob
 
     # Gets paths of every xlsx file in specified directory
-    FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
+    FOLDER_PATH = os.path.join("Tables", "1970 Mar Apr Right Tables")
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
     # Opens specific dataframe
     df = pd.read_excel(files_paths[200], "Table_0")
 
     # Fun stuff
     table = Table(df=df)
-    table.CheckLabels()
+    table.check_labels()
     # table.CheckDates()
-    table.CheckNormals(QUOTIENT_MAX=10)
+    table.check_normals(QUOTIENT_MAX=10)
 
     # print([cell.value for cell in table.bad_cells])

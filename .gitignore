@@ -1,5 +1,6 @@
 output/
 tables/
+input/
 .idea/
 credentials1.json
 env/
