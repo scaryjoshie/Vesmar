@@ -1,4 +1,4 @@
-# CODE WRITTEN BY JOSHUA LEE, 
+# CODE WRITTEN BY JOSHUA LEE,
 # GITHUB: scaryjoshie
 # EMAIL: scaryjoshie@gmail.com
 
@@ -10,6 +10,7 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
+
 # Python Imports
 from src.TableOperations import Table
 from src.MiscUtils import location_to_cell_id
@@ -24,34 +25,27 @@ FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
 # Gets paths of every xlsx file in specified directory
 file_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
 # CONSTANTS
-QUOTIENT_MAX = 10 # max values that 2 cells can have when divided by one another before the row is flagged
-
+QUOTIENT_MAX = (
+    10  # max values that 2 cells can have when divided by one another before the row is flagged
+)
 
 
 ######################################################################
 
-# Takes care of color pattern stuff
-'''
-COLOR STUFF
-date --> yellow (#fffb85)
-normal anomaly --> pink (#fc9dde)
-label --> green (#71bd74)
-row_culprit --> dark blue (#515be0)
-row --> light blue (#96b1ff)
-'''
+
 color_dict = {
-'date' : "fffffb85",
-'normal': "fffc9dde",
-'label': "ff71bd74",
-'row_culprit': "ff72a5f7",
-'row_small': "ff4de3e0",
-'no_decimal': 'ffd088f2',
-'row': "ffbbd4fc",
+    "date": "fffffb85",  # date --> yellow (#fffb85)
+    "normal": "fffc9dde",  # normal anomaly --> pink (#fc9dde)
+    "label": "ff71bd74",  # label --> green (#71bd74)
+    "row_culprit": "ff72a5f7",  # row_culprit --> dark blue (#515be0)
+    "row_small": "ff4de3e0",
+    "no_decimal": "ffd088f2",
+    "row": "ffbbd4fc",  # row --> light blue (#96b1ff)
 }
 
 fillers = {}
 for color in color_dict.keys():
-    temp = PatternFill(patternType='solid', fgColor=color_dict[color])
+    temp = PatternFill(patternType="solid", fgColor=color_dict[color])
     fillers[color] = temp
 
 ######################################################################
@@ -59,12 +53,24 @@ for color in color_dict.keys():
 
 # Creates directory for output
 output_dir = "output18"
-os.mkdir(f'Output\\{output_dir}')
+if os.path.exists(os.path.join("output", output_dir)):
+    while True:
+        overwrite = input("Dir w/ same name exists. Overwrite? (y/n): ")
+        if "y" == overwrite:
+            os.rmdir(os.path.join("output", output_dir))
+            break
+        elif "n" == overwrite:
+            output_dir = input("Choose a new output dir name: ")
+            break
+        else:
+            continue
+if not os.path.exists("output"):
+    os.mkdir("output")
+os.mkdir(os.path.join("output", output_dir))
 
 
 # Runs through every file
 for file_path in file_paths:
-
     print(file_path)
 
     # Reads file into df then runs through the demerger
@@ -72,7 +78,7 @@ for file_path in file_paths:
     df = duplicate_shift(raw_df)
 
     # Creates table object and checks all values
-    table = Table(df=df) 
+    table = Table(df=df)
     table.CheckDates
     table.CheckNormals(QUOTIENT_MAX=QUOTIENT_MAX)
     table.CheckLabels()

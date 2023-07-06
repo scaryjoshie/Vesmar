@@ -7,7 +7,7 @@ import statistics
 from src.CellOperations import Cell
 from difflib import get_close_matches
 
-'''
+"""
 Input: dataframe 
 1) Checks that all dates are numeric and in order (seperate code for the last date in column 20)
 2) Checks that all non-label cells contain only numbers, decimals, and percent signs
@@ -15,7 +15,7 @@ Input: dataframe
 4) Could also put all label rows into a list, then look for small dev9iations in similarity and flag them
 5) Highlights null label rows and also combined label rows
 Output: dataframe cell numbers
-'''
+"""
 
 DECIMAL_THRESHOLD = 2
 
@@ -36,30 +36,27 @@ class Table:
             "label": [],
         }
         # Creates stuff
-        self.OpenResources() # creates self.dates_format which is used for checking dates
-        self.CreateNewTable() # this function also creates self.df
-
+        self.OpenResources()  # creates self.dates_format which is used for checking dates
+        self.CreateNewTable()  # this function also creates self.df
 
     def OpenResources(self):
         # Reads dates_formats to get a list for later use
-        self.dates_format = list(pd.read_csv('Resources\\dates_format.tsv',sep='\t'))
+        self.dates_format = list(pd.read_csv("Resources\\dates_format.tsv", sep="\t"))
 
         # Reads allowed labels
-        with open ('Resources\\labels_258-299 (m).txt', 'r') as f:
+        with open("Resources\\labels_258-299 (m).txt", "r") as f:
             self.allowed_labels = []
             for line in f:
                 self.allowed_labels.append(line.strip())
-        #print(self.allowed_labels)
-
+        # print(self.allowed_labels)
 
     def CreateNewTable(self):
-        self.df = self.raw_df.copy(deep = True)
+        self.df = self.raw_df.copy(deep=True)
         self.df_list = []
 
         # Sets values for df
         for row_num in range(0, self.raw_df.shape[0]):
             for col_num in range(0, self.raw_df.shape[1]):
-
                 # Decides whether the type is "date", "label", or "normal"
                 if row_num == 0:
                     type = "date"
@@ -67,24 +64,23 @@ class Table:
                     type = "label"
                 else:
                     type = "normal"
-                
+
                 # Creates cell object
-                cell = Cell(value = self.raw_df.iat[row_num, col_num],
-                            type=type,
-                            location=[row_num,col_num])
-                
+                cell = Cell(
+                    value=self.raw_df.iat[row_num, col_num], type=type, location=[row_num, col_num]
+                )
+
                 # Adds cell object to dataframe and to a list
                 self.df.iloc[row_num, col_num] = cell
                 self.df_list.append(cell)
-                
 
     def CheckDates(self):
         dates_list = list(filter(lambda x: x.type == "date", self.df_list))
-        #print([date.value for date in dates_list])
-        #print(self.dates_format)
+        # print([date.value for date in dates_list])
+        # print(self.dates_format)
         for i in range(0, min(len(dates_list), len(self.dates_format))):
-            #print("LIST", len(dates_list))
-            #print("FORMAT", len(self.dates_format))
+            # print("LIST", len(dates_list))
+            # print("FORMAT", len(self.dates_format))
             if not str(self.dates_format[i]).strip() == str(dates_list[i].value).strip():
                 self.bad_cells["date"].append(dates_list[i])
 
@@ -100,13 +96,12 @@ class Table:
 
         # Finds rows with a more than 10x difference
         for row in row_nums:
-
             # Gets a list of everything in the row
             row_list = list(filter(lambda x: x.location[0] == row, filtered_normals_list))
 
             # Checks if a row contains decimal values row by turning the list into a string, then measuring the occurences of "." in the string
-            row_as_string = ''.join([str(i.value) for i in row_list])
-            num_decimals = row_as_string.count('.')
+            row_as_string = "".join([str(i.value) for i in row_list])
+            num_decimals = row_as_string.count(".")
 
             row_is_decimal_row = num_decimals >= DECIMAL_THRESHOLD
 
@@ -121,20 +116,20 @@ class Table:
             if len(row_list) > 0:
                 row_median = statistics.median([x.usable_value for x in row_list])
             for cell in row_list:
-                #list_of_quotients = [cell.usable_value/x.usable_value for x in row_list]
-                quotient = cell.usable_value/row_median
-                #if max(list_of_quotients) > QUOTIENT_MAX:
+                # list_of_quotients = [cell.usable_value/x.usable_value for x in row_list]
+                quotient = cell.usable_value / row_median
+                # if max(list_of_quotients) > QUOTIENT_MAX:
 
                 # If the row is a decimal row but there is no decimal in the cell:
-                if row_is_decimal_row and not '.' in str(cell.value):
+                if row_is_decimal_row and not "." in str(cell.value):
                     self.bad_cells["no_decimal"].append(cell)
 
                 elif quotient > QUOTIENT_MAX:
-                    '''
+                    """
                     print("QUOTIENT:", max(list_of_quotients))
                     print("cell value: ", cell.value)
                     print([cell.value for cell in row_list])
-                    '''
+                    """
                     self.bad_cells["row_culprit"].append(cell)
                     # Reminds the program to add the entire row to the list of bad cells
                     row_is_corrupt = True
@@ -155,19 +150,21 @@ class Table:
         # Removes all null cells from labels_list
         labels_list = list(filter(lambda x: x.is_null == False, labels_list))
         # Flags labels
-        flagged_labels = list(filter(lambda x: x.value.strip() not in self.allowed_labels, labels_list))
-        
+        flagged_labels = list(
+            filter(lambda x: x.value.strip() not in self.allowed_labels, labels_list)
+        )
+
         # Sees if there exists a close option to correct to for each flagged label
         for i in flagged_labels:
             close_matches = get_close_matches(i.value, self.allowed_labels, 1)
             if len(close_matches) > 0:
                 i.correction = get_close_matches(i.value, self.allowed_labels, 1)[0]
-                i.value = "{} --> {}".format(i.value, get_close_matches(i.value, self.allowed_labels, 1)[0])
-        
+                i.value = "{} --> {}".format(
+                    i.value, get_close_matches(i.value, self.allowed_labels, 1)[0]
+                )
+
         self.bad_cells["label"].extend(flagged_labels)
-        #print([label.value for label in flagged_labels])
-
-
+        # print([label.value for label in flagged_labels])
 
 
 ###################################
@@ -175,6 +172,7 @@ class Table:
 if __name__ == "__main__":
     # Imports
     import glob
+
     # Gets paths of every xlsx file in specified directory
     FOLDER_PATH = "Tables\\1970 Mar Apr Right Tables"
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
@@ -184,7 +182,7 @@ if __name__ == "__main__":
     # Fun stuff
     table = Table(df=df)
     table.CheckLabels()
-    #table.CheckDates()
+    # table.CheckDates()
     table.CheckNormals(QUOTIENT_MAX=10)
-    
-    #print([cell.value for cell in table.bad_cells])
+
+    # print([cell.value for cell in table.bad_cells])
