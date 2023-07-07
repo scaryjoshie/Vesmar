@@ -113,14 +113,12 @@ def optimize(save_optimziation=True):
         print(f"PROCESSES COUNT set to: {round(optimal_concurrency_count)}")
     else:
         print("PROCESSES COUNT not updated")
+
+
 # Process all files in parallel
 if __name__ == "__main__":
-
-    optimize()
-
-    quit()
-
     start_time = time.perf_counter()  # for timing execution
+
     with Pool(processes=4) as pool:  # concurrent execution
         pool.map(
             process_spreadsheet, glob.glob(f"{INPUT_DIR}/*.xlsx")

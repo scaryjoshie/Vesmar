@@ -1,0 +1,121 @@
+% Assets in $ & Gov'ts
+% Assets in Insur.
+% Earn'd Comm. Eq'ty
+% Earned Liq. Value
+% Earned Net Worth
+% Earned Total Cap'l
+% Gr. Inc., Other Subs.
+% Gross Inc. fr. Bks.
+Adj. C. Funds/Mtg. L.
+Adj. Earn'gs per sh.
+Adj. Inc. per sh.
+Adj. Income ($ mill.)
+Adj. Life Earn'gs sh.
+Adj. Mtg. Inc. sh.
+Adj. Und. Inc. sh.
+Avg. Ann. Div'd Yield
+Avg. Ann. Div. Yield
+Avg. Ann. P/Adj. E.
+Avg. Ann. P/E Ratio
+Avg. Interest Paid
+Book Value per sh.
+Cap'I Funds/Deposits
+Cap'l F'ds/Total Cap'l
+Cap'l Funds ($ mill.)
+Cap'l Funds/Deposits
+Cap'l Funds/Rec'bles
+Cap'l Spending per sh.
+Cap. Gn sh. (after tax)
+Cash ($ Mill)
+Cash Earn'gs per sh.
+Cmptrs. & Rel. Revs.
+Comm. Shs. Outst'g
+Comm. stks/Assets
+Comp. on Lease
+Computers on Lease
+Deposits ($ mill.)
+Deposits per sh.
+Depr. per sh.
+Depreciation Rate
+Div'd Pay-out Ratio
+Div'ds Decl'd per sh.
+Div'ds per sh.
+Earn. on Liq'd't'g Val.
+Exp./Avg. Assets
+Expense Ratio
+Fire/Cas. Earn'gs sh.
+Fire/Cas. Invest. Inc.
+Fire/Cas. Prem. Inc.
+Fire/Cas. Und. Margin
+Funded Debt
+Funded Debt ($ Mill)
+Funded Debt ($ mill.)
+G & A Exp./Avg. Assets
+Gov't ($ mill.)
+Gov't Sec. ($ mill.)
+Gross Assets in Bk'ng
+Gross Income
+Gross Income ($ mill.)
+Gross Pr' p'rty ($ Mill)
+Inc. from C'mptr.
+Inc. from Inv'stm'nts
+Inc. from Invs Ops.
+Income ($ mill.)
+Income Tax Rate
+Income per sh.
+Int. Cost/Gross Inc.
+Interest Ratio
+Invest. Inc. Pay-out
+Invest. Income sh.
+Life Curr. Charges
+Life Invest. Inc. ($mill)
+Life Prem. Inc. ($ mill)
+Life Rep't'd Profits
+Life Res. Transfers
+Liq'd'g Value ($ mill.)
+Liq'd'g Value sh.
+Liq'd't'g Value per sh.
+Loans, Disc. ($ mill.)
+Loans/Deposits
+Loss Ratio
+Mortg. Loans ($ mill.)
+Net Inc. fr. Undist. Eq.
+Net Income
+Net Income ($ Mill)
+Net Income ($ mill.)
+Net Income per sh.
+Net Plant ($ mill.)
+Net Worth
+Net Worth ($ Mill)
+Net Worth ($ mill.)
+Operating Margin
+Payout Ratio
+Pre-Res. Earn. ($ mill.)
+Pre-Res. Earn. sh.
+Pre-Res. Earn./Avg Sav.
+Pre-Res. Earn./Avg. Sav.
+Pre-Res. Earn./Com. Eq. Res.
+Pre-Res. Earn./Gross Inc.
+Pre-Tax Profit Margin
+Prem's Wr. ($ mill.)
+Prem. Wr./Cap'l F'ds
+Premiums Wr. sh.
+Price as % Liq. Value
+Price/Invest. Inc.
+Price/Liq'd'g Value
+Price/Liq'd't'g Value
+Receivables ($ mill.)
+Receivables per sh.
+Rep't'd Life Earn'gs sh.
+Revenues ($ Mill)
+Sales ($ mill.)
+Sales per sh.
+Sav. Deposits ($ mill.)
+Sch. assets/Mtg. L.
+Short-t./Total Debt
+Total Adj. Earn'gs sh.
+Total Assets
+Total Assets ($ mill.)
+Underw't'g Margin
+Undrwtg. & Ins. Revs
+Working Cap'l ($ mill.)
