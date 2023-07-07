@@ -1,72 +1,49 @@
 # CODE WRITTEN BY JOSHUA LEE,
 # GITHUB: scaryjoshie
 # EMAIL: scaryjoshie@gmail.com
-
-
-# Imports
+import json
 import time
 import glob
 import os
 import shutil
+import configparser
+from multiprocessing import Pool
+
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
-from multiprocessing import Pool, Process
 
-# Python Imports
 from src.TableOperations import Table
-from src.MiscUtils import location_to_cell_id
+from src.MiscUtils import location_to_cell_id, foo
 from src.DuplicateShift import duplicate_shift
 
+# gets config from config.ini
+config_parser = configparser.ConfigParser()
+config_parser.read("config.ini")
+config_parser.sections()
+config = config_parser["config"]
 
-######################################################################
-INPUT_DIR = os.path.join("input")
-OUTPUT_DIR = "output18"
-QUOTIENT_MAX = (
-    10  # max values that 2 cells can have when divided by one another before the row is flagged
-)
-######################################################################
-
-# gets all files from INPUT_DIR
-file_paths = glob.glob(f"{INPUT_DIR}/*.xlsx")
+INPUT_DIR = config["INPUT_DIR"]
+OUTPUT_DIR = config["OUTPUT_DIR"]
+OVERRIDE_EXISTING_OUTPUT = config["OVERRIDE_EXISTING_OUTPUT"]
+QUOTIENT_MAX = int(config["QUOTIENT_MAX"])
+EXCLUDE_FILES = json.loads(config["EXCLUDE_FILES"])  # not yet implemented
+COLOR_DICT = dict(config_parser.items("COLOR_DICT"))
 
 # color mapping
-color_dict = {
-    "date": "fffffb85",  # date --> yellow (#fffb85)
-    "normal": "fffc9dde",  # normal anomaly --> pink (#fc9dde)
-    "label": "ff71bd74",  # label --> green (#71bd74)
-    "row_culprit": "ff72a5f7",  # row_culprit --> dark blue (#515be0)
-    "row_small": "ff4de3e0",
-    "no_decimal": "ffd088f2",
-    "row": "ffbbd4fc",  # row --> light blue (#96b1ff)
-}
-
 fillers = {}
-for color in color_dict.keys():
-    temp = PatternFill(patternType="solid", fgColor=color_dict[color])
+for color in COLOR_DICT.keys():
+    temp = PatternFill(patternType="solid", fgColor=COLOR_DICT[color])
     fillers[color] = temp
 
-
-# Creates directory for output
-# if os.path.exists(os.path.join("output", OUTPUT_DIR)):
-#     while True:
-#         overwrite = input("Dir w/ same name exists. Overwrite? (y/n): ")
-#         if "y" == overwrite:
-#             os.rmdir(os.path.join("output", OUTPUT_DIR))
-#             break
-#         elif "n" == overwrite:
-#             OUTPUT_DIR = input("Choose a new output dir name: ")
-#             break
-#         else:
-#             continue
-# if not os.path.exists("output"):
-#     os.mkdir("output")
-
-output_path = os.path.join("output", OUTPUT_DIR)
-# # if os.path.exists(output_path):
-shutil.rmtree(output_path)
-os.mkdir(output_path)
+# create/overwrite output dir
+full_output_path = os.path.join("Output", OUTPUT_DIR)
+if OVERRIDE_EXISTING_OUTPUT and os.path.exists(full_output_path):
+    shutil.rmtree(full_output_path)
+if not os.path.exists("Output"):
+    os.mkdir("Output")
+os.mkdir(full_output_path)
 
 
 def process_spreadsheet(file_path):
@@ -101,11 +78,53 @@ def process_spreadsheet(file_path):
     wb.save(os.path.join("Output", OUTPUT_DIR, name))
 
 
+def optimize(save_optimziation=True):
+    """
+    Calculates the optimal number of cores by finding the optimum of the function here: https://www.desmos.com/calculator/xcfduba49k
+    Finds the fastest time based on process creation overhead and execution time
+    d/d(#processes) (overhead * #processes + (number_input_data / #processes) * function_execution_time)
 
+    The optimization is negligible, I just wasted a bunch of time on it and feel bad removing it.
+    Feel free to remove it. Im just too attached to do it myself.
+    This function is pretty excessive since results should be consistent across all systems.
+    """
+
+    OUTPUT_DIR = "tmp"
+    FILES = glob.glob(f"{INPUT_DIR}/*.xlsx")
+
+    # time process execution time
+    start_1 = time.perf_counter()
+    process_spreadsheet(FILES[0])
+    time_1 = time.perf_counter() - start_1
+
+    # timing process creation overhead
+    with Pool() as pool:
+        start_2 = time.perf_counter()
+        pool.map(foo, [0])
+        time_2 = time.perf_counter() - start_2
+
+    # find optimal number of cores to complete the process
+    optimal_concurrency_count = float(pow(len(FILES) * time_1 / time_2, 0.5))
+    print(f"exact optimal process count: {optimal_concurrency_count}")
+    if save_optimziation:
+        config_parser["config"]["PROCESSES"] = str(round(optimal_concurrency_count))
+        with open('config.ini', 'w') as configfile:
+            config_parser.write(configfile)
+        print(f"PROCESSES COUNT set to: {round(optimal_concurrency_count)}")
+    else:
+        print("PROCESSES COUNT not updated")
 # Process all files in parallel
 if __name__ == "__main__":
 
-    start_time = time.perf_counter()
-    with Pool(processes=4) as pool:
-        pool.map(process_spreadsheet, file_paths)
+    optimize()
+
+    quit()
+
+    start_time = time.perf_counter()  # for timing execution
+    with Pool(processes=4) as pool:  # concurrent execution
+        pool.map(
+            process_spreadsheet, glob.glob(f"{INPUT_DIR}/*.xlsx")
+        )  # inputs are a list of files in the input_dir -> passed to func
+
+    # completion message + total time
     print(f"Spread sheet processing completed in: {time.perf_counter()-start_time}")

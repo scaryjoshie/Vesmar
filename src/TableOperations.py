@@ -42,7 +42,9 @@ class Table:
 
     def open_resources(self):
         # Reads dates_formats to get a list for later use
-        self.dates_format = list(pd.read_csv(os.path.join("Resources", "dates_format.tsv"), sep="\t"))
+        self.dates_format = list(
+            pd.read_csv(os.path.join("Resources", "dates_format.tsv"), sep="\t")
+        )
 
         # Reads allowed labels
         with open(os.path.join("Resources", "labels_258-299 (m).txt"), "r") as f:
