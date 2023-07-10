@@ -62,7 +62,7 @@ def process_spreadsheet(file_path):
     # Loads file into openpyxl
     wb = openpyxl.load_workbook(file_path)
     ws = wb["Table_0"]
-    rows = dataframe_to_rows(table)
+    # rows = dataframe_to_rows(table)
 
     # Fills every cell value with what it's supposed to be
     for cell in table.df_list:
@@ -108,7 +108,7 @@ def optimize(save_optimziation=True):
     print(f"exact optimal process count: {optimal_concurrency_count}")
     if save_optimziation:
         config_parser["config"]["PROCESSES"] = str(round(optimal_concurrency_count))
-        with open('config.ini', 'w') as configfile:
+        with open("config.ini", "w") as configfile:
             config_parser.write(configfile)
         print(f"PROCESSES COUNT set to: {round(optimal_concurrency_count)}")
     else:
