@@ -78,43 +78,6 @@ def process_spreadsheet(file_path):
     wb.save(os.path.join("Output", OUTPUT_DIR, name))
 
 
-def optimize(save_optimziation=True):
-    """
-    Calculates the optimal number of cores by finding the optimum of the function here: https://www.desmos.com/calculator/xcfduba49k
-    Finds the fastest time based on process creation overhead and execution time
-    d/d(#processes) (overhead * #processes + (number_input_data / #processes) * function_execution_time)
-
-    The optimization is negligible, I just wasted a bunch of time on it and feel bad removing it.
-    Feel free to remove it. Im just too attached to do it myself.
-    This function is pretty excessive since results should be consistent across all systems.
-    """
-
-    OUTPUT_DIR = "tmp"
-    FILES = glob.glob(f"{INPUT_DIR}/*.xlsx")
-
-    # time process execution time
-    start_1 = time.perf_counter()
-    process_spreadsheet(FILES[0])
-    time_1 = time.perf_counter() - start_1
-
-    # timing process creation overhead
-    with Pool() as pool:
-        start_2 = time.perf_counter()
-        pool.map(foo, [0])
-        time_2 = time.perf_counter() - start_2
-
-    # find optimal number of cores to complete the process
-    optimal_concurrency_count = float(pow(len(FILES) * time_1 / time_2, 0.5))
-    print(f"exact optimal process count: {optimal_concurrency_count}")
-    if save_optimziation:
-        config_parser["config"]["PROCESSES"] = str(round(optimal_concurrency_count))
-        with open('config.ini', 'w') as configfile:
-            config_parser.write(configfile)
-        print(f"PROCESSES COUNT set to: {round(optimal_concurrency_count)}")
-    else:
-        print("PROCESSES COUNT not updated")
-
-
 # Process all files in parallel
 if __name__ == "__main__":
     start_time = time.perf_counter()  # for timing execution
