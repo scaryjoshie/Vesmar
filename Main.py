@@ -24,12 +24,14 @@ config_parser.read("config.ini")
 config_parser.sections()
 config = config_parser["config"]
 
+
 INPUT_DIR = config["INPUT_DIR"]
 OUTPUT_DIR = config["OUTPUT_DIR"]
 OVERRIDE_EXISTING_OUTPUT = config["OVERRIDE_EXISTING_OUTPUT"]
 QUOTIENT_MAX = int(config["QUOTIENT_MAX"])
 EXCLUDE_FILES = json.loads(config["EXCLUDE_FILES"])  # not yet implemented
 COLOR_DICT = dict(config_parser.items("COLOR_DICT"))
+
 
 # color mapping
 fillers = {}

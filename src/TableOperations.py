@@ -18,6 +18,7 @@ Input: dataframe
 Output: dataframe cell numbers
 """
 
+
 DECIMAL_THRESHOLD = 2
 
 
