@@ -80,8 +80,8 @@ if __name__ == "__main__":
     FOLDER_PATH = os.path.join("Tables", "1970 Mar Apr Right Tables")
     files_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
     # Opens specific dataframe
-    df = pd.read_excel(files_paths[294], "Table_0")
+    df = pd.read_excel(files_paths[296], "Table_0")
 
     dup = duplicate_shift(df=df)
 
-    dup.to_excel("testing or archive\\294 done 2.xlsx", index=False)
+    dup.to_excel("testing or archive\\296 done 2.xlsx", index=False)

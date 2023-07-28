@@ -23,6 +23,7 @@ config_parser.read("config.ini")
 config_parser.sections()
 config = config_parser["config"]
 
+
 # color mapping
 fillers = {}
 # a = config
@@ -68,7 +69,7 @@ def process_spreadsheet(file_path):
     # Names and saves file
     name = os.path.basename(file_path)
     wb.save(os.path.join(config['OUTPUT_DIR'], name))
-    
+
 
 # Process all files in parallel
 if __name__ == "__main__":
