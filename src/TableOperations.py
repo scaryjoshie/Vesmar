@@ -64,7 +64,7 @@ class Table:
                 # Decides whether the type is "date", "label", or "normal"
                 if row_num == 0:
                     type = "date"
-                elif col_num == 18:
+                elif col_num == 5:
                     type = "label"
                 else:
                     type = "normal"

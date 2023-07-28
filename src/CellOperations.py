@@ -18,7 +18,7 @@ class Cell:
         # Types
         allowed_types = ["date", "label", "normal"]
         if type not in allowed_types:
-            raise ValueError("Invalid type. Expected one of: %s" % allowed_types)
+            raise ValueError(f"Invalid type. Expected one of: {allowed_types}")
         else:
             self.type = type
 

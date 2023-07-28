@@ -36,7 +36,9 @@ def location_to_cell_id(location):
     return f"{l}{h}"
 
 
-def foo(a): pass
+def foo(a):
+    pass
+
 
 if __name__ == "__main__":
     print(location_to_cell_id([1, 0]))
