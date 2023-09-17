@@ -4,10 +4,16 @@ import pandas as pd
 import os
 import openpyxl
 
+
+# Variables
+FOLDER_PATH = "Input\\1977 Feb Apr Tables\\1977 Feb Apr Right"
+OUTPUT_PATH = "Output\\all_page_firms\\1977 Feb Apr Right\\all_page_firm.xlsx"
+
+
 # Gets paths of every xlsx file in specified directory
-FOLDER_PATH = "Input\\Completed Tables"
 file_paths = glob.glob(f"{FOLDER_PATH}/*.xlsx")
 file_paths = [file for file in file_paths if "all_page_firm" not in file]
+
 
 # Opens every file in the path
 file_list = []
@@ -45,4 +51,4 @@ for file in file_list:
     start_row += 1
 
 # Names and saves file
-wb.save("Output\\all_page_firm.xlsx")
+wb.save(OUTPUT_PATH)

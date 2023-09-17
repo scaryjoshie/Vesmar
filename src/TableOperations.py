@@ -64,7 +64,7 @@ class Table:
                 # Decides whether the type is "date", "label", or "normal"
                 if row_num == 0:
                     type = "date"
-                elif col_num == 5:
+                elif col_num == 8:
                     type = "label"
                 else:
                     type = "normal"
@@ -125,7 +125,9 @@ class Table:
                 # if max(list_of_quotients) > QUOTIENT_MAX:
 
                 # If the row is a decimal row but there is no decimal in the cell:
-                if row_is_decimal_row and not "." in str(cell.value):
+                clause1 = row_is_decimal_row and not "." in str(cell.value)
+                clause2 = cell.has_usable_value and not cell.usable_value >= 100
+                if clause1 and clause2:
                     self.bad_cells["no_decimal"].append(cell)
 
                 elif quotient > QUOTIENT_MAX:
@@ -146,6 +148,7 @@ class Table:
                 self.bad_cells["row_small"].append(min_cell)
 
     def check_labels(self):
+        return
         # Gets a list of all cells tagged as "label" cells
         labels_list = list(filter(lambda x: x.type == "label", self.df_list))
         # Finds all labels that are null and tags them

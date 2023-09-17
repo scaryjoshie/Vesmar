@@ -28,6 +28,11 @@ class Cell:
         self.usable_value = self.get_usable_value()
         self.is_null = pd.isna(self.raw_value)
 
+        if self.is_null:
+            self.value = ''
+            self.raw_value = ''
+
+
     def check_for_anomalies(self):
         # If the cell is null, there are no anomalies and so it returns false
         if pd.isna(self.raw_value):

@@ -16,6 +16,7 @@ from openpyxl.styles import PatternFill
 from src.TableOperations import Table
 from src.MiscUtils import location_to_cell_id, foo
 from src.DuplicateShift import duplicate_shift
+from src.SimpleRowFix import simple_row_fix
 
 # gets config from config.ini
 config_parser = configparser.ConfigParser()
@@ -45,7 +46,9 @@ def process_spreadsheet(file_path):
 
     # Reads file into df then runs through the de-merger
     raw_df = pd.read_excel(file_path, "Table_0")
-    df = duplicate_shift(raw_df)
+    #df = simple_row_fix(raw_df)
+    df = raw_df
+    #df = duplicate_shift(raw_df)
 
     # Creates table object and checks all values
     table = Table(df=df)
@@ -75,10 +78,20 @@ def process_spreadsheet(file_path):
 if __name__ == "__main__":
     start_time = time.perf_counter()  # for timing execution
 
+    file_paths = glob.glob(f"{config['INPUT_DIR']}/*.xlsx")
+
+    for i in file_paths:
+        process_spreadsheet(file_path=i)
+
+
+    '''
     with Pool(processes=4) as pool:  # concurrent execution
         pool.map(
             process_spreadsheet, glob.glob(f"{config['INPUT_DIR']}/*.xlsx")
         )  # inputs are a list of files in the input_dir -> passed to func
+    '''
+        
+    
 
     # completion message + total time
     print(f"Spread sheet processing completed in: {time.perf_counter()-start_time}")
